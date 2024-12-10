@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import CoverImage from "../assets/CoverImage.png";
+import CoverImage from "../assets/coverImage.png";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import ProfilePhoto from "../assets/Menu.png";
 import { MdEdit } from "react-icons/md";

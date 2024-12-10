@@ -1,0 +1,8 @@
+/* Tailwind classes for centering and mobile screen size */
+body {
+  @apply bg-gray-100; /* Optional: Set a background color for the app */
+}
+
+.app-container {
+  @apply min-h-screen flex justify-center items-center bg-gray-100;
+}

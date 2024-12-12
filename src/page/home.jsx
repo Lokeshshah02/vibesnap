@@ -6,7 +6,7 @@ import { useAppContext } from "../context/ContextApi";
 
 const Home = () => {
   const navigate = useNavigate();
-  const { currentUser } = useAppContext();
+  const { state } = useAppContext();
 
   const handleProfile = () => {
     navigate("/profile");
@@ -15,11 +15,15 @@ const Home = () => {
   return (
     <div>
       <div className="flex gap-2 p-4 items-center" onClick={handleProfile}>
-        <img src={ProfilePhoto} alt="" />
+        <img
+          className="w-12 h-12 rounded-full object-cover"
+          src={state.user?.user_metadata?.avatar_url || ProfilePhoto}
+          alt=""
+        />
         <div>
           <p className="text-xs text-gray-400">Welcome back,</p>
           <p className="text-base font-bold text-gray-700">
-            {currentUser?.displayName}
+            {state.user?.user_metadata?.full_name}
           </p>
         </div>
       </div>

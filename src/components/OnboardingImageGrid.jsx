@@ -30,12 +30,16 @@ const ImageGrid = () => {
   const navigate = useNavigate();
   const { signInWithGooglePopup } = useAppContext();
 
-  const handleGoogleAuth = async () => {
-    const response = await signInWithGooglePopup();
-    console.log("response", response);
-    navigate("/home", {
-      replace: true,
-    });
+  const handleGoogleAuth = async (e) => {
+    e.preventDefault(); // Prevent form submission or default button behavior
+    console.log("Prevented default behavior");
+
+    try {
+      const response = await signInWithGooglePopup();
+      navigate("/home", { replace: true });
+    } catch (error) {
+      console.error("Error during Google authentication:", error);
+    }
   };
 
   return (
@@ -68,6 +72,7 @@ const ImageGrid = () => {
           Moments That Matter, Shared Forever.
         </p>
         <button
+          type="button" // Make sure this is type="button" to prevent it from acting as a submit button
           onClick={handleGoogleAuth}
           className="flex items-center gap-2 justify-center bg-gray-800 text-gray-100 px-4 py-2 rounded-full shadow hover:bg-gray-200 ml-auto mr-auto mt-4"
         >

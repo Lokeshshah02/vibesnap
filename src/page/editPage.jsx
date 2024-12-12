@@ -11,8 +11,8 @@ import { useAppContext } from "../context/ContextApi";
 
 const EditPage = () => {
   const [isEdit, setIsEdit] = useState(false);
-  const [isAddPost, setIsAddPost] = useState(false);
-  const { currentUser } = useAppContext();
+  // const [isAddPost, setIsAddPost] = useState(false);
+  const { state } = useAppContext();
 
   const navigate = useNavigate();
 
@@ -21,27 +21,28 @@ const EditPage = () => {
   };
 
   const handleAddPost = () => {
-    setIsAddPost(true);
+    // setIsAddPost(true);
+    navigate("/add-post");
   };
 
   const handleBack = () => {
     navigate("/home");
   };
 
-  if (isAddPost) {
-    return (
-      <AddPostPage
-        onClose={() => setIsAddPost(false)}
-        onNext={(image) => {
-          alert(`Image selected: ${image}`);
-          setIsAddPost(false);
-        }}
-      />
-    );
-  }
+  // if (isAddPost) {
+  //   return (
+  //     <AddPostPage
+  //       onClose={() => setIsAddPost(false)}
+  //       onNext={(image) => {
+  //         alert(`Image selected: ${image}`);
+  //         setIsAddPost(false);
+  //       }}
+  //     />
+  //   );
+  // }
 
   const propData = {
-    name: currentUser?.displayName,
+    name: state.user?.user_metadata?.full_name,
   };
 
   return (
@@ -66,7 +67,7 @@ const EditPage = () => {
 
         <div className="absolute left-4 bottom-1/7 transform -translate-y-1/2">
           <img
-            src={ProfilePhoto}
+            src={state.user?.user_metadata?.avatar_url || ProfilePhoto}
             alt="Profile"
             className="w-32 h-32 rounded-full"
           />

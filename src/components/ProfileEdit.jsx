@@ -1,6 +1,7 @@
 import React from "react";
 
-const ProfileEdit = () => {
+const ProfileEdit = ({ formData, setFormData }) => {
+  
   return (
     <div className="p-4 space-y-6">
       <div className="flex flex-col">
@@ -10,6 +11,10 @@ const ProfileEdit = () => {
         <input
           type="text"
           id="name"
+          value={formData.name}
+          onChange={(e) =>
+            setFormData((prev) => ({ ...prev, name: e.target.value }))
+          }
           placeholder="Enter your name"
           className="border-b border-gray-300 focus:outline-none focus:border-blue-500 transition-colors"
         />
@@ -21,6 +26,10 @@ const ProfileEdit = () => {
         <input
           type="text"
           id="bio"
+          value={formData.bio}
+          onChange={(e) =>
+            setFormData((prev) => ({ ...prev, bio: e.target.value }))
+          }
           placeholder="Enter your bio"
           className="border-b border-gray-300 focus:outline-none focus:border-blue-500 transition-colors"
         />
@@ -30,3 +39,4 @@ const ProfileEdit = () => {
 };
 
 export default ProfileEdit;
+

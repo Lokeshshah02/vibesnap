@@ -4,14 +4,14 @@ import { BsCamera, BsImages } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 
 const AddPostPage = () => {
-  const [selectedFiles, setSelectedFiles] = useState([]); // Array of selected files
+  const [selectedFiles, setSelectedFiles] = useState([]); 
   const navigate = useNavigate();
 
   const handleSelectFiles = (event) => {
     const files = Array.from(event.target.files); // Convert FileList to array
     if (files.length > 0) {
       const fileData = files.map((file) => ({
-        url: URL.createObjectURL(file), // Ensure valid File object
+        url: URL.createObjectURL(file), 
         type: file.type,
         file,
       }));
@@ -96,7 +96,7 @@ const AddPostPage = () => {
           <input
             type="file"
             accept="image/*, video/*"
-            multiple // Allow multiple file selection
+            multiple 
             className="hidden"
             onChange={handleSelectFiles}
           />

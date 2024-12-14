@@ -6,3 +6,26 @@ body {
 .app-container {
   @apply min-h-screen flex justify-center items-center bg-gray-100;
 }
+
+.loader {
+  border-top-color: #3498db;
+  animation: spin 1s infinite linear;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.fixed {
+  position: fixed;
+}
+
+.bg-opacity-50 {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.z-50 {
+  z-index: 50;
+}

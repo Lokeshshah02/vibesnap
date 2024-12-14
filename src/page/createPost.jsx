@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAppContext } from "../context/ContextApi";
+import supabase from "../db/dbConfig";
+import { IoMdArrowRoundBack } from "react-icons/io";
 
 const CreatePostPage = () => {
   const location = useLocation();
@@ -8,8 +10,9 @@ const CreatePostPage = () => {
   const { files = [] } = location.state || {};
   const [currentIndex, setCurrentIndex] = useState(0);
   const [description, setDescription] = useState("");
-  const { uploadFile } = useAppContext();
+  const { uploadFile, isLoading, setIsLoading } = useAppContext();
 
+  const userData = JSON.parse(localStorage.getItem("user"));
   const handleNext = () => {
     if (currentIndex < files.length - 1) {
       setCurrentIndex(currentIndex + 1);
@@ -23,14 +26,12 @@ const CreatePostPage = () => {
   };
 
   const handleUpload = async () => {
+    setIsLoading(true)
     try {
       if (!files || files.length === 0) {
         console.error("No files to upload.");
         return;
       }
-
-      console.log("Starting upload process for files:", files);
-
       // Upload each file and collect the URLs
       const allUrls = await Promise.all(
         files.map(async (file) => {
@@ -40,7 +41,6 @@ const CreatePostPage = () => {
               return null;
             }
             const uploadedUrl = await uploadFile(file.file);
-            console.log(`File uploaded successfully: ${uploadedUrl}`);
             return uploadedUrl;
           } catch (error) {
             console.error(`Error uploading file "${file.file.name}":`, error);
@@ -50,29 +50,65 @@ const CreatePostPage = () => {
       );
 
       // Filter out failed uploads (null values)
-      const validUrls = allUrls.filter((url) => url !== null);
+      const validFiles = allUrls.filter((url) => url !== null);
 
-      if (validUrls.length === 0) {
+      if (validFiles.length === 0) {
         console.warn("No files were uploaded successfully.");
       } else {
-        console.log("All uploaded file URLs:", validUrls.join(", "));
+        // console.log("All uploaded file urls:", validFiles.join(", "));
       }
-
-      // Further processing (e.g., send URLs to the server)
+      await handleAddPostToDB(validFiles);
     } catch (error) {
       console.error("Error during file upload process:", error);
+    } finally {
+      setIsLoading(false)
+    }
+  };
+
+  const handleAddPostToDB = async (uploadedFiles) => {
+    setIsLoading(true)
+    try {
+      const postsData = uploadedFiles.map((file) => ({
+        description: description || null,
+        file: file.data.publicUrl,
+        file_type: file.data.publicUrl.split('.').pop(),
+        user_id: userData.dbId,
+        like_count: 0,
+      }));
+
+      const { data, error , status} = await supabase.from("posts").insert(postsData);
+      if(status === 201){
+        setIsLoading(false)
+        navigate("/profile", { replace: true });
+
+      }
+      if (error) {
+        throw new Error(`Error inserting posts: ${error.message}`);
+      }
+      return data;
+    } catch (error) {
+      console.error("Error adding posts to the database:", error);
+      return null;
+    } finally {
+      setIsLoading(false)
     }
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
+      {isLoading && (
+        <div className="fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50 z-50">
+          <div className="loader w-16 h-16 border-4 border-t-4 border-gray-300 rounded-full animate-spin"></div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex justify-between items-center px-4 py-3 border-b border-gray-300">
         <button
           onClick={() => navigate("/add-post", { replace: true })}
           className="text-black text-lg font-semibold"
         >
-          &larr;
+          <IoMdArrowRoundBack size={24} />
         </button>
         <p className="font-bold text-lg">New Post</p>
         <div />
@@ -107,9 +143,8 @@ const CreatePostPage = () => {
               {files.map((_, index) => (
                 <div
                   key={index}
-                  className={`w-2 h-2 rounded-full ${
-                    index === currentIndex ? "bg-black" : "bg-gray-300"
-                  }`}
+                  className={`w-2 h-2 rounded-full ${index === currentIndex ? "bg-black" : "bg-gray-300"
+                    }`}
                 />
               ))}
             </div>

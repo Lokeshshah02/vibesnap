@@ -33,12 +33,13 @@ const ImageGrid = () => {
   const handleGoogleAuth = async (e) => {
     e.preventDefault();
     try {
-      const response = await signInWithGooglePopup(navigate);
-      // if (response) {
-      //   navigate("/home", { replace: true });
-      // } else {
-      //   console.error("Google auth failed; no response.");
-      // }
+      const user = await signInWithGooglePopup(navigate);
+
+      if (user) {
+        navigate("/home", { replace: true });
+      } else {
+        console.error("Google auth failed; no response.");
+      }
     } catch (error) {
       console.error("Error during Google authentication:", error);
     }

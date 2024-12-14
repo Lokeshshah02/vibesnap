@@ -18,19 +18,22 @@ export const AppProvider = ({ children }) => {
   const signInWithGooglePopup = async (navigate) => {
     setIsLoading(true);
     try {
-      const { user, error } = await supabase.auth.signInWithOAuth({
+      const { data: data, error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
           skipBrowserRedirect: true,
         },
         // options: {
-        //     redirectTo: "http://localhost:5173/home",
-        //   },
+        //   redirectTo: "http://localhost:5173/home",
+        // },
         popup: true,
       });
+
       if (error) throw error;
-      navigate("/home");
-      return user;
+      // navigate("/home");
+      console.log("data", data);
+
+      return data;
     } catch (error) {
       console.error("Error during Google sign-in:", error);
       alert(`Error: ${error.message}`);

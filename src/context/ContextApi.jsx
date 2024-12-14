@@ -15,27 +15,28 @@ export const AppProvider = ({ children }) => {
     setState((prev) => ({ ...prev, user }));
   };
 
-  const signInWithGooglePopup = async () => {
+  const signInWithGooglePopup = async (navigate) => {
     setIsLoading(true);
     try {
       const { user, error } = await supabase.auth.signInWithOAuth({
         provider: "google",
-        // options :{
-        //   skipBrowserRedirect : true
-        // },
         options: {
-            redirectTo: "http://localhost:5173/home",
-          },
-          popup: true, 
+          skipBrowserRedirect: true,
+        },
+        // options: {
+        //     redirectTo: "http://localhost:5173/home",
+        //   },
+        popup: true,
       });
       if (error) throw error;
+      navigate("/home");
       return user;
     } catch (error) {
       console.error("Error during Google sign-in:", error);
       alert(`Error: ${error.message}`);
       return null;
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false);
     }
   };
 
@@ -68,19 +69,18 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-
   useEffect(() => {
     const handleAuthChange = async (event, session) => {
       if (event === "SIGNED_IN" && session?.user) {
         let user = session.user;
-  
+
         const { data: existingData } = await supabase
           .from("users")
           .select("id, email, google_id, name, img_url, bio, cover_url")
           .eq("email", user.email)
           .limit(1)
           .single();
-  
+
         if (existingData) {
           user = {
             ...user,
@@ -94,13 +94,13 @@ export const AppProvider = ({ children }) => {
             },
           };
         }
-  
+
         const { data: users } = await supabase
           .from("users")
           .select("id")
           .eq("email", user.email)
           .eq("google_id", user.id);
-  
+
         if (!users?.length) {
           const { error: upsertError } = await supabase.from("users").upsert({
             email: user.email,
@@ -108,13 +108,16 @@ export const AppProvider = ({ children }) => {
             img_url: user.user_metadata.avatar_url,
             google_id: user.id,
           });
-  
+
           if (upsertError) {
-            console.error("Error inserting/updating user profile:", upsertError);
+            console.error(
+              "Error inserting/updating user profile:",
+              upsertError
+            );
             return;
           }
         }
-  
+
         updateUser(user);
         localStorage.setItem("user", JSON.stringify(user));
       } else if (event === "SIGNED_OUT") {
@@ -122,29 +125,30 @@ export const AppProvider = ({ children }) => {
         localStorage.removeItem("user");
       }
     };
-  
+
     const initializeAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-  
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
       if (session) {
         await handleAuthChange("SIGNED_IN", session);
       } else if (localStorage.getItem("user")) {
         const user = JSON.parse(localStorage.getItem("user"));
         updateUser(user);
       }
-  
+
       const { data: subscription } = supabase.auth.onAuthStateChange(
         (event, session) => {
           handleAuthChange(event, session);
         }
       );
-  
+
       return () => subscription.unsubscribe();
     };
-  
+
     initializeAuth();
   }, []);
-  
 
   return (
     <AppContext.Provider
@@ -171,4 +175,3 @@ export const useAppContext = () => {
   }
   return context;
 };
-

@@ -28,11 +28,8 @@ export const AppProvider = ({ children }) => {
         },
         popup: true,
       });
-
       if (error) throw error;
       // navigate("/home");
-      console.log("data", data);
-
       return data;
     } catch (error) {
       console.error("Error during Google sign-in:", error);
@@ -133,7 +130,6 @@ export const AppProvider = ({ children }) => {
       const {
         data: { session },
       } = await supabase.auth.getSession();
-      console.log("sess", session);
 
       if (session) {
         await handleAuthChange("SIGNED_IN", session);

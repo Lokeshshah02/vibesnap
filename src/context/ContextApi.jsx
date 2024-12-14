@@ -20,12 +20,12 @@ export const AppProvider = ({ children }) => {
     try {
       const { data: data, error } = await supabase.auth.signInWithOAuth({
         provider: "google",
-        options: {
-          skipBrowserRedirect: true,
-        },
         // options: {
-        //   redirectTo: "http://localhost:5173/home",
+        //   skipBrowserRedirect: true,
         // },
+        options: {
+          redirectTo: window.location.origin + "/home",
+        },
         popup: true,
       });
 
@@ -133,6 +133,7 @@ export const AppProvider = ({ children }) => {
       const {
         data: { session },
       } = await supabase.auth.getSession();
+      console.log("sess", session);
 
       if (session) {
         await handleAuthChange("SIGNED_IN", session);

@@ -35,11 +35,11 @@ const ImageGrid = () => {
     try {
       const user = await signInWithGooglePopup(navigate);
 
-      if (user) {
-        navigate("/home", { replace: true });
-      } else {
-        console.error("Google auth failed; no response.");
-      }
+      // if (user) {
+      //   navigate("/home", { replace: true });
+      // } else {
+      //   console.error("Google auth failed; no response.");
+      // }
     } catch (error) {
       console.error("Error during Google authentication:", error);
     }

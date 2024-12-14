@@ -24,7 +24,7 @@ export const AppProvider = ({ children }) => {
         //   skipBrowserRedirect : true
         // },
         options: {
-            redirectTo: "http://localhost:5173/home",
+            redirectTo: "https://vibesnap-prod.vercel.app/home",
           },
           popup: true, 
       });
